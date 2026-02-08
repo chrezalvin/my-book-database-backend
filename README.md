@@ -2,6 +2,9 @@
 
 This project was made with Express framework in typescript
 
+## This server is live
+[click here](https://my-book-database-backend.onrender.com) to access the server
+
 ## Prerequiste
 This project was made in:
 - OS: Windows
@@ -22,3 +25,17 @@ This project was made in:
 - JWT-based authentication
 - typescript type-checking
 - debugging logs via `debug` package
+
+## API Path list
+- GET `/books`: gets all book by page with limit of `PAGINATION_NUMBER`, have optional `?keyword` parameter to search by title
+- GET `/books/:book_id`: gets a single book by their `book_id`
+- POST `/books/add`: (requires jwt) adds a single book, needs multipart header active
+- POST `/books/edit/:book_id`: (requires jwt) edits a single book by their `book_id`
+- GET `/books/delete/:book_id`: (requires jwt) deletes a single book by their `book_id`
+
+- GET `/users/me`: (requires jwt) gets current jwt user data (only `user_id` and `email`)
+- POST `/users/login`: authenticate with email and password, returns jwt string
+- POST `/users/signup`: creates new user and returns the jwt string
+
+## Postman documentation
+[click here](https://www.postman.com/chrezalvin/workspace/my-book-collection) to view postman API documentation
