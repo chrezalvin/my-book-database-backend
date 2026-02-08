@@ -7,8 +7,11 @@ import { PAGINATION_NUMBER } from "@configs";
 
 export const get_all_books_by_page = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 0;
+    const keyword = req.query.keyword as string | undefined;
 
-    const books = await fetchBooksByPage(page, PAGINATION_NUMBER);
+    debug(`Fetching books for page: ${page} with keyword: ${keyword}`);
+
+    const books = await fetchBooksByPage(page, PAGINATION_NUMBER, keyword);
 
     res.status(200).json({ data: books });
 }
