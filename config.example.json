@@ -1,0 +1,12 @@
+{
+    "PORT": 3000,
+    
+    "SUPABASE_URL": "https://<input-supabase-id>.supabase.co",
+    "SUPABASE_KEY": "<your-supabase-key>",
+    "PASSWORD_HASH_MODE": "sha256",
+
+    "JWT_SECRET": "<some-secret-token>",
+    "JWT_EXPIRATION": 3600,
+
+    "PAGINATION_NUMBER": 9
+}
