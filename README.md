@@ -17,6 +17,8 @@ This project was made in:
 
 ## List of Features
 - RESTful API infrastructure
+- Supabase remote database connection
+- CRUD on books database
+- JWT-based authentication
 - typescript type-checking
 - debugging logs via `debug` package
-- JWT-based authentication
