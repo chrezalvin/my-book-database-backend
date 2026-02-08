@@ -1,6 +1,6 @@
 {
   "name": "my-book-database-backend",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "a simple crud-based book collection library",
   "main": "index.js",
   "scripts": {

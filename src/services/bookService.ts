@@ -15,13 +15,14 @@ function translateBookCoverPathToUrl(cover_img_path: string): string {
         .publicUrl;
 }
 
-export const fetchBooksByPage = async (page: number, pageSize: number) => {
+export const fetchBooksByPage = async (page: number, pageSize: number, keyword?: string) => {
     const {from, to} = getPagination(page, pageSize);
 
     const {data, error} = await supabase
         .from(tableName)
         .select("*")
         .range(from, to - 1) // Supabase range is inclusive, so we use to - 1
+        .ilike("title", keyword ? `%${keyword}%` : "%%")
         .order("created_at", {ascending: false});
 
     if (error)
