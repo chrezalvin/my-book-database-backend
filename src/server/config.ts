@@ -2,14 +2,23 @@ import Express, { NextFunction, Response, Request } from "express";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
 import routes from "./routes";
-// import cors from "cors";
+import cors from "cors";
 
 // import routes from "./routes";
 // import { sessionCheck, page404, loggerRoute } from "./middlewares";
 
 const express = Express();
 
-// express.use(cors());
+express.use(
+  cors({
+    origin: [
+      "http://localhost:5173", // Vite dev
+      "http://localhost:3000", // CRA dev (if any)
+      "https://my-book-database-frontend.onrender.com", // Render frontend
+    ],
+    credentials: false, // jwt based, no cookies
+  })
+);
 express.use(logger("dev"));
 express.use(Express.json());
 express.use(Express.urlencoded());
