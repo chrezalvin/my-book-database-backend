@@ -1,9 +1,12 @@
 const debug = require("debug")("Server:Books");
 
-import {Request, Response} from "express"
-import {addBook, deleteBookById, editBookById, fetchBookById, fetchBooksByPage} from "@services/bookService"
-import { isBookPartial, isBookWithoutId } from "@models/Book";
+import { Request, Response } from "express"
 import { PAGINATION_NUMBER } from "@configs";
+
+import { BookViewService } from "@services/view_services/BookViewService"
+import { BookServiceOrchestrator } from "@services/orchestrators/BookServiceOrchestrator";
+
+import { createBookSchema, updateBookSchema } from "schemas/BookSchema";
 
 export const get_all_books_by_page = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 0;
@@ -11,7 +14,7 @@ export const get_all_books_by_page = async (req: Request, res: Response) => {
 
     debug(`Fetching books for page: ${page} with keyword: ${keyword}`);
 
-    const books = await fetchBooksByPage(page, PAGINATION_NUMBER, keyword);
+    const books = await BookViewService.fetchBookViewsByPage(page, PAGINATION_NUMBER, keyword);
 
     res.status(200).json({ data: books });
 }
@@ -24,52 +27,51 @@ export const get_book_by_id = async (req: Request, res: Response) => {
 
     debug(`Fetching book with ID: ${book_id}`);
 
-    const book = await fetchBookById(book_id);
+    const book = await BookViewService.fetchBookViewById(book_id);
 
     res.status(200).json({ data: book });
 }
 
 export const add_book = async (req: Request, res: Response) => {
-    if(!req.user)
-        return res.status(401).json({error: "Unauthorized"});
+    const bookInput: unknown = req.body.book ? JSON.parse(req.body.book) : undefined;
 
-    const book = req.body?.book ? JSON.parse(req.body.book) : undefined;
-
-    if(book === undefined)
+    if(bookInput === undefined)
         return res.status(400).json({error: "Book data is required"});
 
-    if(!isBookWithoutId(book))
-        return res.status(400).json({error: "Invalid book data"});
+    const parsed = createBookSchema.parse(bookInput);
 
-    debug(`Adding new book: ${JSON.stringify(book)}`);
-    
-    const newBook = await addBook(book, req.user.user_id, req.file ? {
-        file: req.file.buffer,
-        mimeType: req.file.mimetype
-    } : undefined);
+    const newBook = await BookServiceOrchestrator.createBook(
+        parsed,
+        req.file ? {
+            file: req.file.buffer,
+            mimeType: req.file.mimetype
+        } : undefined
+    )
 
     res.status(200).json({data: newBook});
 }
 
 export const edit_book_by_id = async (req: Request, res: Response) => {
-    if(!req.user)
-        return res.status(401).json({error: "Unauthorized"});
-
     const book_id = req.params.book_id;
-    const bookUpdates = req.body?.book ? JSON.parse(req.body.book) : undefined;
+    const bookUpdates: unknown = req.body?.book ? JSON.parse(req.body.book) : undefined;
 
     if (typeof book_id !== "string")
         return res.status(400).json({ error: "Invalid book ID" });
 
-    if (bookUpdates === undefined || !isBookPartial(bookUpdates))
-        return res.status(400).json({ error: "Invalid book update data" });
+    const parsed = updateBookSchema.parse(bookUpdates);
 
-    const book = await editBookById(book_id, bookUpdates, req.file ? {
-        file: req.file.buffer,
-        mimeType: req.file.mimetype
-    } : undefined);
+    debug(`Editing book with ID: ${book_id} with updates: ${JSON.stringify(parsed)}`);
 
-    res.status(200).json({ data: book });
+    const editedBook = await BookServiceOrchestrator.editBook(
+        book_id,
+        parsed,
+        req.file ? {
+            file: req.file.buffer,
+            mimeType: req.file.mimetype
+        } : undefined
+    )
+
+    res.status(200).json({ data: editedBook });
 }
 
 export const delete_book_by_id = async (req: Request, res: Response) => {
@@ -81,7 +83,7 @@ export const delete_book_by_id = async (req: Request, res: Response) => {
     if (typeof book_id !== "string")
         return res.status(400).json({ error: "Invalid book ID" });
 
-    const response = await deleteBookById(book_id);
+    const response = await BookServiceOrchestrator.deleteBook(book_id);
 
     res.status(200).json({ data: { success: response } });
-}
+} 

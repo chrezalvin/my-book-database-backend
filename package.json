@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "devstart": "SET DEBUG=Server:*,Models:*&&nodemon -r tsconfig-paths/register ./src/index.ts",
+    "test": "SET DEBUG=Server:*,Models:*&&nodemon -r tsconfig-paths/register ./test.ts",
     "build": "tsc && tsc-alias",
     "start": "npm run build && node ./output/index"
   },
@@ -21,7 +22,8 @@
     "multer": "^2.0.2",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -30,5 +32,8 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": ["src"]
   }
 }
