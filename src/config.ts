@@ -10,6 +10,8 @@ export const PASSWORD_HASH_MODE = configs.PASSWORD_HASH_MODE
 export const JWT_SECRET = configs.JWT_SECRET
 export const JWT_EXPIRATION = configs.JWT_EXPIRATION
 
+export const CORS_ORIGINS = configs.CORS_ORIGINS
+
 export const PAGINATION_NUMBER = configs.PAGINATION_NUMBER
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
