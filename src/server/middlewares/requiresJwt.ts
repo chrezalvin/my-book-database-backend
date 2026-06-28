@@ -1,10 +1,8 @@
-const debug = require("debug")("Server:Middlewares:RequiresJWT");
-
-import { JWT_SECRET, PASSWORD_HASH_MODE} from "@configs";
+import { JWT_SECRET } from "@configs";
 import {Request, Response, NextFunction} from "express";
-import { isJwt } from "@models/Jwt";
+import { jwtModel } from "@models/Jwt";
 import jwt from "jsonwebtoken";
-import { fetchUserByIdAndEmail } from "@services/userService";
+import { UserService } from "@services/individual_services/UserService";
 
 export const requiresJwt = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -21,13 +19,20 @@ export const requiresJwt = async (req: Request, res: Response, next: NextFunctio
         if (err)
             return res.status(401).json({ error: "Invalid token" });
 
-        if (!isJwt(decoded))
+        const parsed = jwtModel.safeParse(decoded);
+
+        if (!parsed.success)
             return res.status(401).json({ error: "Invalid token payload" });
 
-        if (Date.now() >= decoded.exp * 1000)
+        const jwtPayload = parsed.data;
+
+        if (Date.now() >= (jwtPayload.exp * 1000))
             return res.status(401).json({ error: "Token has expired" });
 
-        const user = await fetchUserByIdAndEmail(decoded.user_id, decoded.email);
+        const user = await UserService.fetchUserByIdAndEmail(
+            jwtPayload.user_id, 
+            jwtPayload.email
+        );
 
         req.user = user;
 

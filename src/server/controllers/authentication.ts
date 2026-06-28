@@ -1,7 +1,7 @@
-const debug = require("debug")("Server:Users");
+const debug = require("debug")("Server:Authentication");
 
 import {Request, Response} from "express"
-import {addUser, loginUser} from "@services/userService"
+import {UserService} from "@services/individual_services/UserService"
 import {JWT_EXPIRATION, JWT_SECRET} from "@configs"
 import jwt from "jsonwebtoken";
 import { User } from "@models/User";
@@ -17,7 +17,7 @@ export const authenticate = async (req: Request, res: Response) => {
 
     debug(`Logging in user with email: ${email}`);
 
-    const user = await loginUser(email, password);
+    const user = await UserService.loginUser(email, password);
     
     debug(`User logged in successfully: ${JSON.stringify(user)}`);
 
@@ -42,7 +42,7 @@ export const sign_up = async (req: Request, res: Response) => {
 
     debug(`Signing up user with email: ${email}`);
 
-    const user = await addUser(email, password);
+    const user = await UserService.addUser(email, password);
 
     debug(`User signed up successfully: ${JSON.stringify(user)}`);
 
