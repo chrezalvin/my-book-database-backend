@@ -3,6 +3,7 @@ import logger from "morgan";
 import cookieParser from "cookie-parser";
 import routes from "./routes";
 import cors from "cors";
+import { CORS_ORIGINS } from "@configs";
 
 // import routes from "./routes";
 // import { sessionCheck, page404, loggerRoute } from "./middlewares";
@@ -11,11 +12,7 @@ const express = Express();
 
 express.use(
   cors({
-    origin: [
-      "http://localhost:5173", // Vite dev
-      "http://localhost:3000", // CRA dev (if any)
-      "https://my-book-database-frontend.onrender.com", // Render frontend
-    ],
+    origin: CORS_ORIGINS,
     credentials: false, // jwt based, no cookies
   })
 );
