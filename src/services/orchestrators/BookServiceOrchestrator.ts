@@ -1,4 +1,4 @@
-import { User } from "@models/User";
+import { bookCreate, bookUpdate } from "@models/Book";
 import { BookView } from "@models/Views/BookView";
 import { BookGenreService } from "@services/individual_services/BookGenreService";
 import { BookService } from "@services/individual_services/BookService";
@@ -13,13 +13,13 @@ export class BookServiceOrchestrator {
             mimeType: string
         }
     ): Promise<BookView>{
-        // remove genre_ids from createBookInput if it exists
         const genre_ids = createBookInput.genre_ids;
-        if(genre_ids)
-            delete createBookInput.genre_ids;
+
+        // remove all irrelevant fields from createBookInput before passing it to BookService.addBook
+        const createBook = bookCreate.parse(createBookInput);
 
         const newBook = await BookService.addBook(
-            createBookInput, 
+            createBook,
             file
         );
     
@@ -50,12 +50,11 @@ export class BookServiceOrchestrator {
     ): Promise<BookView>{
         // remove genre_ids from updateBookInput if it exists
         const genre_ids = updateBookInput.genre_ids;
-        if(genre_ids)
-            delete updateBookInput.genre_ids;
+        const updateBook = bookUpdate.parse(updateBookInput);
 
         const editedBook = await BookService.editBookById(
             book_id, 
-            updateBookInput,
+            updateBook,
             file
         );
 
