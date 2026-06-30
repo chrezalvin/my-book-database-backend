@@ -18,8 +18,21 @@ export const get_publisher_by_id = async (req: Request, res: Response) => {
     res.status(200).json({ data: publisher });
 }
 
+export const get_publishers = async (req: Request, res: Response) => {
+    const name = req.query.name as string | undefined;
+
+    if (name && typeof name !== "string")
+        return res.status(400).json({ error: "Invalid name" });
+
+    debug(`Fetching publishers with name: ${name}`);
+
+    const publishers = await PublisherService.fetchPublishers(name);
+
+    res.status(200).json({ data: publishers });
+}
+
 export const add_publisher = async (req: Request, res: Response) => {
-    const publisherInput: unknown = req.body.publisher;
+    const publisherInput: unknown = req.body;
 
     if(publisherInput === undefined)
         return res.status(400).json({error: "Publisher data is required"});
@@ -33,7 +46,7 @@ export const add_publisher = async (req: Request, res: Response) => {
 
 export const edit_publisher_by_id = async (req: Request, res: Response) => {
     const publisher_id = req.params.publisher_id;
-    const bookUpdates: unknown = req.body.publisher;
+    const bookUpdates: unknown = req.body;
 
     if (typeof publisher_id !== "string")
         return res.status(400).json({ error: "Invalid book ID" });

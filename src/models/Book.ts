@@ -13,8 +13,8 @@ export const bookModel = z.object({
     isbn: z.string().nullable(),
     edition: z.string().nullable(),
     
-    publisher_id: publisherModel.shape.publisher_id,
-    author_id: authorModel.shape.author_id,
+    publisher_id: publisherModel.shape.publisher_id.nullable(),
+    author_id: authorModel.shape.author_id.nullable(),
 });
 
 export const bookCreate = bookModel.omit({

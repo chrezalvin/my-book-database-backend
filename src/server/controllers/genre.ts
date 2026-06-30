@@ -41,7 +41,7 @@ export const edit_genre_by_id = async (req: Request, res: Response) => {
         return res.status(401).json({error: "Unauthorized"});
 
     const genre_id = req.params.genre_id;
-    const data: unknown = req.body?.genre;
+    const data: unknown = req.body;
 
     if (typeof genre_id !== "string")
         return res.status(400).json({ error: "Invalid genre ID" });

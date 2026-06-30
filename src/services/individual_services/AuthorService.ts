@@ -1,5 +1,6 @@
 import {supabase} from "@configs"
 import { Author, AuthorCreate, authorModel, AuthorUpdate } from "@models/Author";
+import { PAGINATION_NUMBER } from "@configs";
 
 const debug = require("debug")("Server:AuthorService");
 
@@ -17,6 +18,28 @@ export class AuthorService {
             throw new Error(`Error fetching author with ID ${author_id}: ${error.message}`);
 
         const parsed = authorModel.parse(data);
+
+        return parsed;
+    }
+
+    static async fetchAuthors(name?: string): Promise<Author[]> {
+        let query = supabase
+            .from(AuthorService.authorTableName)
+            .select("*");
+
+        if (name)
+            query = query.ilike("author_name", `%${name}%`);
+
+        query = query.limit(PAGINATION_NUMBER);
+
+        const {data, error} = await query;
+
+        if (error)
+            throw new Error(`Error fetching authors: ${error.message}`);
+
+        const unknown_data = data as unknown[];
+
+        const parsed = unknown_data.map((author) => authorModel.parse(author));
 
         return parsed;
     }

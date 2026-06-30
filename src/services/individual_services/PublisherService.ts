@@ -1,5 +1,6 @@
 import {supabase} from "@configs"
 import { Publisher, PublisherCreate, PublisherUpdate, publisherModel } from "@models/Publisher";
+import { PAGINATION_NUMBER } from "@configs";
 
 const debug = require("debug")("Server:PublisherService");
 
@@ -17,6 +18,28 @@ export class PublisherService {
             throw new Error(`Error fetching publisher with ID ${publisher_id}: ${error.message}`)
 
         const parsed = publisherModel.parse(data);
+
+        return parsed;
+    }
+
+    static async fetchPublishers(name?: string): Promise<Publisher[]> {
+        let query = supabase
+            .from(PublisherService.publisherTableName)
+            .select("*");
+
+        if(name)
+            query = query.ilike("publisher_name", `%${name}%`);
+
+        query = query.limit(PAGINATION_NUMBER);
+
+        const {data, error} = await query;
+        
+        if(error)
+            throw new Error(`Error fetching publishers: ${error.message}`)
+
+        const unknown_data = data as unknown[];
+
+        const parsed = unknown_data.map((publisher) => publisherModel.parse(publisher));
 
         return parsed;
     }

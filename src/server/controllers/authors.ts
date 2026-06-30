@@ -18,8 +18,21 @@ export const get_author_by_id = async (req: Request, res: Response) => {
     res.status(200).json({ data: author });
 }
 
+export const get_authors = async (req: Request, res: Response) => {
+    const name = req.query.name as string | undefined;
+
+    if (name && typeof name !== "string")
+        return res.status(400).json({ error: "Invalid name" });
+
+    debug(`Fetching authors with name: ${name}`);
+
+    const authors = await AuthorService.fetchAuthors(name);
+
+    res.status(200).json({ data: authors });
+}
+
 export const add_author = async (req: Request, res: Response) => {
-    const authorInput: unknown = req.body.author;
+    const authorInput: unknown = req.body;
 
     if(authorInput === undefined)
         return res.status(400).json({error: "Author data is required"});
@@ -33,7 +46,7 @@ export const add_author = async (req: Request, res: Response) => {
 
 export const edit_author_by_id = async (req: Request, res: Response) => {
     const author_id = req.params.author_id;
-    const bookUpdates: unknown = req.body.author;
+    const bookUpdates: unknown = req.body;
 
     if (typeof author_id !== "string")
         return res.status(400).json({ error: "Invalid book ID" });

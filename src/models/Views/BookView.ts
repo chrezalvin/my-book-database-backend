@@ -17,10 +17,10 @@ export const bookViewModel = z.object({
     edition: bookModel.shape.edition,
     
     author_id: bookModel.shape.author_id, 
-    author_name: authorModel.shape.author_name,
+    author_name: authorModel.shape.author_name.nullable(),
 
     publisher_id: bookModel.shape.publisher_id,
-    publisher_name: publisherModel.shape.publisher_name,
+    publisher_name: publisherModel.shape.publisher_name.nullable(),
     
     genres: z.array(
         z.object({
